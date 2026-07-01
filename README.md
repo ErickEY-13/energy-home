@@ -1,12 +1,17 @@
 <div align="center">
   <a href="https://github.com/DIMFLIX-EDUCATION" target="_blank">
-    <img src="assets/education.png" width="350" height="190" style="border-radius: 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.25);" alt="DIMFLIX Education" />
+    <img src="assets/education.png" width="250" height="135" style="border-radius: 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.25); margin: 0 10px;" alt="DIMFLIX Education" />
+  </a>
+  <a href="#" target="_blank">
+    <img src="assets/designs.png" width="250" height="135" style="border-radius: 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.25); margin: 0 10px;" alt="DIMFLIX Designs" />
+  </a>
+  <a href="#" target="_blank">
+    <img src="assets/hackathons.png" width="250" height="135" style="border-radius: 16px; box-shadow: 0 6px 25px rgba(0,0,0,0.25); margin: 0 10px;" alt="DIMFLIX Hackathons" />
   </a>
   <br />
   <br />
   <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Outfit&size=36&duration=2500&pause=2000&color=38BDF8&center=true&width=600&height=50&lines=ENERGY+HOME;Control+de+Energ%C3%ADa+Inteligente;Monitoreo+IoT+en+Tiempo+Real" alt="Typing SVG" /></a>
 </div>
-
 <div align="center">
   <a href="#about">Acerca de</a> • <a href="#flow">Recorrido</a> • <a href="#architecture">Arquitectura</a> • <a href="#setup">Instalación</a> • <a href="#credentials">Credenciales</a>
 </div>
