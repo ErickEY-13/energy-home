@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuario
+model Usuario {
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  passwordHash       String
+  rol                Rol                  @default(user)
+  fechaRegistro      DateTime             @default(now())
+  fechaActualizacion DateTime             @updatedAt
+  dispositivos       UsuarioDispositivo[]
+
+  @@map("usuarios")
+}
+
+// Modelo de Dispositivo (datos técnicos - registrado por admin)
+model Dispositivo {
+  id           Int                  @id @default(autoincrement())
+  serialUnico  String               @unique
+  nombre       String               // Nombre técnico del dispositivo (ej: ESP32-SALA-001)
+  topicMqtt    String
+  estadoActual EstadoDispositivo    @default(OFF)
+  creadoEn     DateTime             @default(now())
+  mediciones   Medicion[]
+  usuarios     UsuarioDispositivo[]
+  analisisML   AnalisisML[]         // 🤖 Análisis ML del dispositivo
+  alertas      Alerta[]             // 🚨 Alertas generadas
+
+  @@map("dispositivos")
+}
+
+// Tabla intermedia para relación M:M Usuario-Dispositivo
+// Aquí el usuario personaliza SU dispositivo
+model UsuarioDispositivo {
+  usuarioId       Int
+  dispositivoId   Int
+  nombrePersonalizado String?          // Nombre que el usuario le da (ej: "TV Sala", "Refri Cocina")
+  tipoObjeto      TipoObjeto?         // Categoría del objeto
+  ubicacion       String?             // Ubicación en casa (ej: "Sala", "Cocina", "Dormitorio")
+  icono           String?             // Icono personalizado
+  fechaAsignado   DateTime            @default(now())
+
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  dispositivo Dispositivo @relation(fields: [dispositivoId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, dispositivoId])
+  @@map("usuario_dispositivos")
+}
+
+// Modelo de Medición - Diseñado para alto volumen
+model Medicion {
+  id            BigInt      @id @default(autoincrement())
+  dispositivoId Int
+  voltaje       Float
+  amperaje      Float
+  potenciaWatts Float
+  fechaRegistro DateTime    @default(now())
+  dispositivo   Dispositivo @relation(fields: [dispositivoId], references: [id], onDelete: Cascade)
+
+  @@index([dispositivoId])
+  @@index([fechaRegistro])
+  @@map("mediciones")
+}
+
+// Enums
+enum Rol {
+  user
+  admin
+}
+
+enum EstadoDispositivo {
+  ON
+  OFF
+}
+
+// Tipos de objetos/electrodomésticos
+enum TipoObjeto {
+  TV
+  REFRIGERADOR
+  LAVADORA
+  MICROONDAS
+  AIRE_ACONDICIONADO
+  VENTILADOR
+  COMPUTADORA
+  LAPTOP
+  CONSOLA_VIDEOJUEGOS
+  ILUMINACION
+  ROUTER
+  CARGADOR
+  CAFETERA
+  LICUADORA
+  HORNO
+  PLANCHA
+  SECADORA
+  CALENTADOR
+  BOMBA_AGUA
+  OTRO
+}
+
+// ============================
+// 🤖 MACHINE LEARNING TABLES
+// ============================
+
+// Tabla para almacenar análisis ML de dispositivos
+model AnalisisML {
+  id                    Int       @id @default(autoincrement())
+  dispositivoId         Int
+  fechaAnalisis         DateTime  @default(now())
+  anomaliasDetectadas   Int       @default(0)
+  severidad             SeveridadML
+  forecastKwh           Float?
+  forecastCosto         Float?
+  recomendaciones       Json?     // Array de objetos {severity, message}
+  datosAnalisis         Json?     // Datos adicionales del análisis
+  
+  dispositivo           Dispositivo @relation(fields: [dispositivoId], references: [id], onDelete: Cascade)
+  
+  @@index([dispositivoId])
+  @@index([fechaAnalisis])
+  @@map("analisis_ml")
+}
+
+// Tabla para alertas en tiempo real
+model Alerta {
+  id                Int         @id @default(autoincrement())
+  dispositivoId     Int
+  tipo              TipoAlerta
+  severidad         SeveridadML
+  mensaje           String      @db.Text
+  datos             Json?       // Datos contextuales de la alerta
+  visto             Boolean     @default(false)
+  fechaCreacion     DateTime    @default(now())
+  
+  dispositivo       Dispositivo @relation(fields: [dispositivoId], references: [id], onDelete: Cascade)
+  
+  @@index([dispositivoId])
+  @@index([fechaCreacion])
+  @@index([visto])
+  @@map("alertas")
+}
+
+// Enums para ML
+enum SeveridadML {
+  low
+  medium
+  high
+}
+
+enum TipoAlerta {
+  anomalia
+  consumo_alto
+  spike
+  prediccion
+  eficiencia
+}

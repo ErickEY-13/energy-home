@@ -1,0 +1,5 @@
+{
+  "serialUnico": "ESP32-NUEVO-004",
+  "nombre": "Sensor Habitación",
+  "topicMqtt": "energy/habitacion/004"
+}

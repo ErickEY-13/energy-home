@@ -1,0 +1,7 @@
+{
+  "serialUnico": "ESP32-SALA-001",
+  "apiKey": "api-key-sala-001-secret",
+  "voltaje": 120.5,
+  "amperaje": 2.3,
+  "potenciaWatts": 277.15
+}
